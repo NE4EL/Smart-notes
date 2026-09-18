@@ -1,1 +1,2 @@
 # Smart-notes
+Its front
