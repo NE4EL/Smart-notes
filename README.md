@@ -205,6 +205,8 @@ GET /api/notes?search=отчёт&space=3&tags=1,4&ordering=-updated_at&page=2
 - `docker-compose.yml`, `.env.example`, Dockerfile'ы, CI в GitHub Actions
 - `backend/config/` (settings, urls), настройка PostgreSQL, команда `seed` с тестовыми данными
 - Сборка перед показом
+- Тесты API
+
 
 ### B — Лимонов Никита, системный аналитик и архитектор
 
@@ -227,8 +229,6 @@ GET /api/notes?search=отчёт&space=3&tags=1,4&ordering=-updated_at&page=2
 - Полнотекстовый поиск и фильтры
 - Загрузка и удаление вложений
 - Тесты API, особенно на изоляцию данных между пользователями (NFR-02)
-
-Правило одно: у каждой папки есть хозяин. В чужую зону лезем через PR с ревью хозяина, а не тихо в своей ветке.
 
 ---
 
