@@ -49,11 +49,15 @@ export function NoteEditorPage() {
     event.preventDefault()
     const data = { title, content, space, tags, is_pinned: isPinned }
 
-    if (isNew) {
-      const created = await create.mutateAsync(data)
-      navigate(`/notes/${created.id}`)
-    } else {
-      await update.mutateAsync({ id: noteId, note: data })
+    try {
+      if (isNew) {
+        const created = await create.mutateAsync(data)
+        navigate(`/notes/${created.id}`)
+      } else {
+        await update.mutateAsync({ id: noteId, note: data })
+      }
+    } catch {
+      // The mutation state displays the error below the editor.
     }
   }
 

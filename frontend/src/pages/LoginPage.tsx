@@ -11,8 +11,12 @@ export function LoginPage() {
 
   async function submit(event: FormEvent) {
     event.preventDefault()
-    await auth.login.mutateAsync({ email, password })
-    navigate('/')
+    try {
+      await auth.login.mutateAsync({ email, password })
+      navigate('/')
+    } catch {
+      // The mutation state displays the error below the form.
+    }
   }
 
   return (

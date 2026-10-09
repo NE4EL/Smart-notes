@@ -12,8 +12,12 @@ export function RegisterPage() {
 
   async function submit(event: FormEvent) {
     event.preventDefault()
-    await auth.register.mutateAsync({ name, email, password })
-    navigate('/login')
+    try {
+      await auth.register.mutateAsync({ name, email, password })
+      navigate('/login')
+    } catch {
+      // The mutation state displays the error below the form.
+    }
   }
 
   return (
