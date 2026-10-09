@@ -1,0 +1,429 @@
+:root {
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #1a1a1a;
+  background: #e9e9e9;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+.primary-button,
+.secondary-button,
+.file-button {
+  border: 1px solid #888;
+  border-radius: 2px;
+  background: #f5f5f5;
+  color: #111;
+  padding: 7px 14px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+button:hover,
+.secondary-button:hover,
+.file-button:hover {
+  background: #e5e5e5;
+}
+
+button:disabled {
+  color: #888;
+  cursor: default;
+}
+
+input,
+select,
+textarea {
+  border: 1px solid #8a8a8a;
+  border-radius: 1px;
+  background: white;
+  color: #111;
+  padding: 8px;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: #0067c0;
+  outline: 1px solid #0067c0;
+}
+
+.app-window {
+  width: min(1180px, 100%);
+  min-height: 100vh;
+  margin: 0 auto;
+  background: #fff;
+  border-left: 1px solid #bbb;
+  border-right: 1px solid #bbb;
+}
+
+.title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding-left: 12px;
+  background: #f4f4f4;
+  border-bottom: 1px solid #d0d0d0;
+}
+
+.app-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+}
+
+.app-icon {
+  display: grid;
+  width: 23px;
+  height: 23px;
+  place-items: center;
+  background: #0067c0;
+  color: white;
+  font-weight: 600;
+}
+
+.window-button {
+  align-self: stretch;
+  min-width: 90px;
+  border: 0;
+  border-left: 1px solid #d0d0d0;
+  background: transparent;
+}
+
+.menu-bar {
+  display: flex;
+  gap: 2px;
+  padding: 3px 7px;
+  border-bottom: 1px solid #bbb;
+  background: #fafafa;
+}
+
+.menu-bar a {
+  padding: 7px 10px;
+  color: #111;
+  text-decoration: none;
+}
+
+.menu-bar a:hover,
+.menu-bar a.active {
+  background: #e5e5e5;
+}
+
+.main-content {
+  padding: 18px;
+}
+
+.primary-button {
+  display: inline-block;
+  border-color: #005a9e;
+  background: #0067c0;
+  color: white;
+  text-align: center;
+}
+
+.primary-button:hover {
+  background: #005a9e;
+}
+
+.danger-button {
+  color: #a30000;
+}
+
+.page-toolbar,
+.editor-toolbar,
+.add-row,
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page-toolbar {
+  margin-bottom: 10px;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 160px;
+}
+
+.filter-panel {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(150px, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.note-list {
+  border: 1px solid #aaa;
+}
+
+.note-card {
+  display: block;
+  padding: 13px 15px;
+  border-bottom: 1px solid #d7d7d7;
+  color: #111;
+  text-decoration: none;
+}
+
+.note-card:last-child {
+  border-bottom: 0;
+}
+
+.note-card:hover {
+  background: #f1f7fc;
+}
+
+.note-card-title {
+  display: flex;
+  justify-content: space-between;
+  color: #005a9e;
+}
+
+.note-card p {
+  overflow: hidden;
+  margin: 7px 0;
+  color: #333;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  color: #666;
+  font-size: 12px;
+}
+
+.note-meta time {
+  margin-left: auto;
+}
+
+.tag {
+  padding: 1px 6px;
+  background: #e6eef5;
+  color: #17496e;
+}
+
+.empty-state,
+.error {
+  padding: 25px;
+  border: 1px solid #bbb;
+  text-align: center;
+}
+
+.error {
+  background: #fff1f1;
+  color: #9c0000;
+}
+
+.pagination {
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.editor {
+  display: flex;
+  min-height: calc(100vh - 120px);
+  flex-direction: column;
+}
+
+.editor-toolbar {
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.editor-toolbar > :first-child {
+  margin-right: auto;
+}
+
+.title-input {
+  border-bottom: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.content-input {
+  min-height: 340px;
+  flex: 1;
+  resize: vertical;
+  font-family: Consolas, "Courier New", monospace;
+  line-height: 1.55;
+}
+
+.editor-options {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 14px;
+  padding: 14px 0;
+}
+
+.field {
+  display: grid;
+  gap: 5px;
+}
+
+.field span,
+.section-title,
+.tag-picker legend {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tag-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 0;
+  border: 1px solid #aaa;
+}
+
+.tag-picker label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.muted {
+  color: #777;
+}
+
+.attachments {
+  padding-top: 12px;
+  border-top: 1px solid #ccc;
+}
+
+.attachment-row,
+.simple-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.file-button {
+  display: inline-block;
+  margin-top: 10px;
+}
+
+.file-button input {
+  display: none;
+}
+
+.manager-page {
+  max-width: 720px;
+}
+
+.manager-page h1 {
+  margin-top: 0;
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.add-row input {
+  flex: 1;
+}
+
+.simple-list {
+  margin-top: 16px;
+  border-top: 1px solid #aaa;
+}
+
+.simple-row div {
+  display: flex;
+  gap: 6px;
+}
+
+.auth-screen {
+  display: grid;
+  min-height: 100vh;
+  padding: 20px;
+  place-items: center;
+  background: #e9e9e9;
+}
+
+.dialog {
+  display: grid;
+  width: min(390px, 100%);
+  gap: 14px;
+  padding: 24px;
+  border: 1px solid #999;
+  background: white;
+  box-shadow: 0 10px 30px #0002;
+}
+
+.dialog-title {
+  margin: -24px -24px 4px;
+  padding: 9px 12px;
+  background: #f4f4f4;
+  border-bottom: 1px solid #bbb;
+  font-size: 13px;
+}
+
+.dialog h1 {
+  margin: 4px 0;
+  font-size: 23px;
+  font-weight: 500;
+}
+
+.auth-link {
+  color: #005a9e;
+  text-align: center;
+}
+
+@media (max-width: 650px) {
+  .main-content {
+    padding: 10px;
+  }
+
+  .menu-bar {
+    overflow-x: auto;
+  }
+
+  .menu-bar a {
+    white-space: nowrap;
+  }
+
+  .filter-panel,
+  .editor-options {
+    grid-template-columns: 1fr;
+  }
+
+  .page-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .editor-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .editor-toolbar > :first-child {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .title-input {
+    font-size: 17px;
+  }
+}
