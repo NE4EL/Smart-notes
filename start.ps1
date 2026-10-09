@@ -18,10 +18,9 @@ $frontendCommand = @"
 Set-Location -LiteralPath '$frontend'
 if (-not (Test-Path 'node_modules')) {
     npm install
+    if (`$LASTEXITCODE -ne 0) { exit `$LASTEXITCODE }
 }
-if (`$LASTEXITCODE -eq 0) {
-    npm run dev
-}
+npm run dev -- --host 127.0.0.1 --port 5173 --strictPort
 "@
 
 Start-Process powershell.exe -ArgumentList '-NoExit', '-Command', $backendCommand
