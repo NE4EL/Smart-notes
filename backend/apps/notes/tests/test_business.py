@@ -46,6 +46,100 @@ class NoteBusinessTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_owner_shares_only_one_note_in_space(self):
+        shared = Note.objects.create(
+            user=self.user, space=self.space, title="Общая"
+        )
+        private = Note.objects.create(
+            user=self.user, space=self.space, title="Личная"
+        )
+
+        invited = self.client.post(
+            f"/api/notes/{shared.id}/share",
+            {"email": self.other_user.email},
+            format="json",
+        )
+        self.assertEqual(invited.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            invited.data["shared_with"][0]["email"],
+            self.other_user.email,
+        )
+
+        self.client.force_authenticate(self.other_user)
+        notes = self.client.get("/api/notes?scope=shared")
+        self.assertEqual(notes.data["count"], 1)
+        self.assertEqual(notes.data["results"][0]["id"], shared.id)
+        self.assertEqual(
+            self.client.get(f"/api/notes/{private.id}").status_code,
+            status.HTTP_404_NOT_FOUND,
+        )
+
+        changed = self.client.patch(
+            f"/api/notes/{shared.id}",
+            {"title": "Изменено вторым пользователем"},
+            format="json",
+        )
+        self.assertEqual(changed.status_code, status.HTTP_200_OK)
+        self.assertEqual(changed.data["title"], "Изменено вторым пользователем")
+        self.assertEqual(
+            self.client.delete(f"/api/notes/{shared.id}").status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
+        self.assertEqual(
+            self.client.patch(
+                f"/api/notes/{shared.id}",
+                {"space": None},
+                format="json",
+            ).status_code,
+            status.HTTP_403_FORBIDDEN,
+        )
+
+        self.client.force_authenticate(self.user)
+        revoked = self.client.delete(
+            f"/api/notes/{shared.id}/share",
+            {"email": self.other_user.email},
+            format="json",
+        )
+        self.assertEqual(revoked.status_code, status.HTTP_200_OK)
+        self.assertEqual(revoked.data["shared_with"], [])
+
+        self.client.force_authenticate(self.other_user)
+        self.assertEqual(
+            self.client.get(f"/api/notes/{shared.id}").status_code,
+            status.HTTP_404_NOT_FOUND,
+        )
+
+    def test_note_without_space_cannot_be_shared(self):
+        note = Note.objects.create(user=self.user, title="Без пространства")
+
+        response = self.client.post(
+            f"/api/notes/{note.id}/share",
+            {"email": self.other_user.email},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_moving_note_out_of_space_removes_access(self):
+        note = Note.objects.create(
+            user=self.user, space=self.space, title="Общая"
+        )
+        note.shared_with.add(self.other_user)
+
+        response = self.client.patch(
+            f"/api/notes/{note.id}", {"space": None}, format="json"
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        note.refresh_from_db()
+        self.assertEqual(note.shared_with.count(), 0)
+
+        self.client.force_authenticate(self.other_user)
+        self.assertEqual(
+            self.client.get(f"/api/notes/{note.id}").status_code,
+            status.HTTP_404_NOT_FOUND,
+        )
+
     def test_user_cannot_assign_foreign_space_or_tag(self):
         foreign_space = Space.objects.create(user=self.other_user, name="Личное")
         foreign_tag = Tag.objects.create(user=self.other_user, name="секрет")

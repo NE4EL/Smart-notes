@@ -25,6 +25,18 @@ export async function updateNote(id: number, note: NoteInput) {
   return response.data
 }
 
+export async function shareNote(id: number, email: string) {
+  const response = await apiClient.post<Note>(`/notes/${id}/share`, { email })
+  return response.data
+}
+
+export async function unshareNote(id: number, email: string) {
+  const response = await apiClient.delete<Note>(`/notes/${id}/share`, {
+    data: { email },
+  })
+  return response.data
+}
+
 export async function patchNote(id: number, note: Partial<NoteInput>) {
   const response = await apiClient.patch<Note>(`/notes/${id}`, note)
   return response.data

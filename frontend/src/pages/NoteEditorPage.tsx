@@ -11,6 +11,7 @@ import {
   useCreateNote,
   useDeleteNote,
   useNote,
+  useShareNote,
   useTogglePin,
   useUpdateNote,
 } from '../hooks/useNotes'
@@ -29,12 +30,14 @@ export function NoteEditorPage() {
   const update = useUpdateNote()
   const remove = useDeleteNote()
   const pin = useTogglePin()
+  const share = useShareNote()
 
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
   const [space, setSpace] = useState<number | null>(null)
   const [tags, setTags] = useState<number[]>([])
   const [isPinned, setIsPinned] = useState(false)
+  const [shareEmail, setShareEmail] = useState('')
 
   useEffect(() => {
     if (!note.data) return
@@ -54,7 +57,12 @@ export function NoteEditorPage() {
         const created = await create.mutateAsync(data)
         navigate(`/notes/${created.id}`)
       } else {
-        await update.mutateAsync({ id: noteId, note: data })
+        const isOwner = Boolean(note.data?.is_owner)
+        await update.mutateAsync({
+          id: noteId,
+          note: isOwner ? data : { title, content },
+          isOwner,
+        })
       }
     } catch {
       // The mutation state displays the error below the editor.
@@ -73,6 +81,20 @@ export function NoteEditorPage() {
     if (!isNew) await pin.mutateAsync({ id: noteId, value: nextValue })
   }
 
+  async function addUser() {
+    if (!shareEmail.trim()) return
+    try {
+      await share.mutateAsync({ id: noteId, email: shareEmail.trim() })
+      setShareEmail('')
+    } catch {
+      // The message below explains that sharing failed.
+    }
+  }
+
+  async function removeUser(email: string) {
+    await share.mutateAsync({ id: noteId, email, remove: true })
+  }
+
   if (!isNew && note.isLoading) return <div className="empty-state">Загрузка...</div>
   if (!isNew && note.isError) return <div className="error">Заметка не найдена</div>
 
@@ -82,8 +104,10 @@ export function NoteEditorPage() {
         <Link className="secondary-button" to="/">
           ← К списку
         </Link>
-        <PinButton onClick={toggleCurrentPin} pinned={isPinned} />
-        {!isNew && (
+        {(isNew || note.data?.is_owner) && (
+          <PinButton onClick={toggleCurrentPin} pinned={isPinned} />
+        )}
+        {!isNew && note.data?.is_owner && (
           <button className="danger-button" onClick={deleteCurrentNote} type="button">
             Удалить
           </button>
@@ -112,12 +136,49 @@ export function NoteEditorPage() {
         value={content}
       />
 
-      <div className="editor-options">
-        <SpaceSelect onChange={setSpace} spaces={spaces.data || []} value={space} />
-        <TagPicker onChange={setTags} tags={tagsList.data || []} value={tags} />
-      </div>
+      {(isNew || note.data?.is_owner) && (
+        <div className="editor-options">
+          <SpaceSelect onChange={setSpace} spaces={spaces.data || []} value={space} />
+          <TagPicker onChange={setTags} tags={tagsList.data || []} value={tags} />
+        </div>
+      )}
 
-      {!isNew && note.data && (
+      {!isNew && note.data && !note.data.is_owner && (
+        <p>Автор: {note.data.owner.name || note.data.owner.email}. Вы можете изменить заголовок и текст.</p>
+      )}
+
+      {!isNew && note.data?.is_owner && note.data.space !== null && (
+        <section className="share-section">
+          <h2>Доступ к заметке</h2>
+          <p>Приглашённый пользователь сможет изменить заголовок и текст.</p>
+          <div className="share-row">
+            <input
+              onChange={(event) => setShareEmail(event.target.value)}
+              placeholder="Email пользователя"
+              type="email"
+              value={shareEmail}
+            />
+            <button disabled={share.isPending} onClick={addUser} type="button">
+              Разрешить доступ
+            </button>
+          </div>
+          {note.data.shared_with.map((user) => (
+            <div className="share-row" key={user.id}>
+              <span>{user.name || user.email} ({user.email})</span>
+              <button onClick={() => removeUser(user.email)} type="button">
+                Убрать доступ
+              </button>
+            </div>
+          ))}
+          {share.isError && <div className="error">Не удалось изменить доступ. Проверьте email.</div>}
+        </section>
+      )}
+
+      {!isNew && note.data?.is_owner && note.data.space === null && (
+        <p>Чтобы поделиться заметкой, сначала выберите пространство и сохраните.</p>
+      )}
+
+      {!isNew && note.data?.is_owner && (
         <AttachmentList
           attachments={note.data.attachments}
           noteId={noteId}

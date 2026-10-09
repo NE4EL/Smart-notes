@@ -20,7 +20,9 @@ export function NoteCard({ note, spaces, tags }: Props) {
       </div>
       <p>{note.content || 'Пустая заметка'}</p>
       <div className="note-meta">
-        <span>{space?.name || 'Без пространства'}</span>
+        <span>{space?.name || note.space_name || 'Без пространства'}</span>
+        {!note.is_owner && <span>Автор: {note.owner.name || note.owner.email}</span>}
+        {note.is_owner && note.shared_with.length > 0 && <span>Общая</span>}
         {noteTags.map((tag) => (
           <span className="tag" key={tag.id}>
             {tag.name}

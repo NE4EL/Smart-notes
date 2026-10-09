@@ -159,6 +159,41 @@ textarea:focus {
   margin-bottom: 10px;
 }
 
+.note-tabs {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+
+.note-tabs .active {
+  background: #dcecf8;
+  border-color: #0067c0;
+}
+
+.share-section {
+  padding: 12px 0;
+  border-top: 1px solid #ccc;
+}
+
+.share-section h2 {
+  margin: 0 0 8px;
+  font-size: 16px;
+}
+
+.share-section p {
+  margin: 7px 0;
+}
+
+.share-row {
+  display: flex;
+  gap: 8px;
+  margin: 8px 0;
+}
+
+.share-row input {
+  flex: 1;
+}
+
 .search-input {
   flex: 1;
   min-width: 160px;

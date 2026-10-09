@@ -22,10 +22,14 @@ export type Attachment = {
 
 export type Note = {
   id: number
+  owner: User
+  is_owner: boolean
   title: string
   content: string
   space: number | null
+  space_name: string | null
   tags: number[]
+  shared_with: User[]
   is_pinned: boolean
   attachments: Attachment[]
   created_at: string
@@ -40,6 +44,7 @@ export type Paginated<T> = {
 }
 
 export type NoteFilters = {
+  scope?: 'mine' | 'shared'
   search?: string
   space?: number
   tags?: number[]

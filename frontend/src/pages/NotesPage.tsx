@@ -10,13 +10,31 @@ import { useTags } from '../hooks/useTags'
 import type { NoteFilters } from '../types'
 
 export function NotesPage() {
-  const [filters, setFilters] = useState<NoteFilters>({ ordering: '-updated_at', page: 1 })
+  const [filters, setFilters] = useState<NoteFilters>({
+    scope: 'mine', ordering: '-updated_at', page: 1,
+  })
   const notes = useNotes(filters)
   const spaces = useSpaces()
   const tags = useTags()
 
   return (
     <section>
+      <div className="note-tabs">
+        <button
+          className={filters.scope === 'mine' ? 'active' : ''}
+          onClick={() => setFilters({ scope: 'mine', ordering: '-updated_at', page: 1 })}
+          type="button"
+        >
+          Мои заметки
+        </button>
+        <button
+          className={filters.scope === 'shared' ? 'active' : ''}
+          onClick={() => setFilters({ scope: 'shared', ordering: '-updated_at', page: 1 })}
+          type="button"
+        >
+          Общие заметки
+        </button>
+      </div>
       <div className="page-toolbar">
         <SearchBar
           onChange={(search) => setFilters({ ...filters, search, page: 1 })}
@@ -27,12 +45,14 @@ export function NotesPage() {
         </Link>
       </div>
 
-      <FilterPanel
-        filters={filters}
-        onChange={(nextFilters) => setFilters({ ...nextFilters, page: 1 })}
-        spaces={spaces.data || []}
-        tags={tags.data || []}
-      />
+      {filters.scope === 'mine' && (
+        <FilterPanel
+          filters={filters}
+          onChange={(nextFilters) => setFilters({ ...nextFilters, page: 1 })}
+          spaces={spaces.data || []}
+          tags={tags.data || []}
+        />
+      )}
 
       {notes.isLoading && <div className="empty-state">Загрузка...</div>}
       {notes.isError && <div className="error">Не удалось загрузить заметки</div>}

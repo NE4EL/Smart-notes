@@ -5,7 +5,10 @@ import {
   deleteNote,
   getNote,
   getNotes,
+  patchNote,
+  shareNote,
   togglePin,
+  unshareNote,
   updateNote,
 } from '../api/notes'
 import { queryKeys } from '../lib/queryKeys'
@@ -37,8 +40,28 @@ export function useCreateNote() {
 export function useUpdateNote() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: ({ id, note }: { id: number; note: NoteInput }) =>
-      updateNote(id, note),
+    mutationFn: ({ id, note, isOwner }: {
+      id: number
+      note: NoteInput | Pick<NoteInput, 'title' | 'content'>
+      isOwner: boolean
+    }) => isOwner
+      ? updateNote(id, note as NoteInput)
+      : patchNote(id, note),
+    onSuccess: (note) => {
+      queryClient.setQueryData(queryKeys.note(note.id), note)
+      queryClient.invalidateQueries({ queryKey: queryKeys.notes })
+    },
+  })
+}
+
+export function useShareNote() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, email, remove }: {
+      id: number
+      email: string
+      remove?: boolean
+    }) => remove ? unshareNote(id, email) : shareNote(id, email),
     onSuccess: (note) => {
       queryClient.setQueryData(queryKeys.note(note.id), note)
       queryClient.invalidateQueries({ queryKey: queryKeys.notes })

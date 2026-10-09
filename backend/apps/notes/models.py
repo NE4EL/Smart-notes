@@ -20,6 +20,11 @@ class Note(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField(blank=True)
     tags = models.ManyToManyField("tags.Tag", blank=True, related_name="notes")
+    shared_with = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        related_name="shared_notes",
+    )
     is_pinned = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
