@@ -3,10 +3,10 @@ from uuid import uuid4
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from .models import User
+from apps.accounts.models import User
 
 
-class AuthApiTests(APITestCase):
+class AuthIntegrationTests(APITestCase):
     def test_register_login_refresh_and_logout(self):
         email = f"auth-{uuid4()}@example.com"
         register = self.client.post(
@@ -19,13 +19,11 @@ class AuthApiTests(APITestCase):
             format="json",
         )
         self.assertEqual(register.status_code, status.HTTP_201_CREATED)
-
-        user = User.objects.get(email=email)
-        self.assertTrue(user.check_password("strongpass123"))
+        self.assertTrue(User.objects.get(email=email).check_password("strongpass123"))
 
         login = self.client.post(
             "/api/auth/login",
-            {"email": user.email, "password": "strongpass123"},
+            {"email": email, "password": "strongpass123"},
             format="json",
         )
         self.assertEqual(login.status_code, status.HTTP_200_OK)
@@ -47,9 +45,9 @@ class AuthApiTests(APITestCase):
         )
         self.assertEqual(logout.status_code, status.HTTP_204_NO_CONTENT)
 
-        blocked_refresh = self.client.post(
+        blocked = self.client.post(
             "/api/auth/refresh",
             {"refresh": refreshed.data["refresh"]},
             format="json",
         )
-        self.assertEqual(blocked_refresh.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(blocked.status_code, status.HTTP_401_UNAUTHORIZED)
